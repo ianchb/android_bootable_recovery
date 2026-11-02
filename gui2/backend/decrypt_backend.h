@@ -28,6 +28,7 @@ class decrypt_backend {
 
   virtual bool is_encrypted() = 0;
   virtual lock_kind kind() = 0;
+  virtual int pattern_size() = 0;
 
   // What the legacy "Decrypt Data" button sets before opening the page: user
   // 0, an empty password, and user 0's lock type.

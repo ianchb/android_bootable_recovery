@@ -37,6 +37,10 @@ lock_kind twrp_decrypt_backend::kind() {
   }
 }
 
+int twrp_decrypt_backend::pattern_size() {
+  return DataManager::GetIntValue(TW_CRYPTO_PATTERN_SIZE);
+}
+
 void twrp_decrypt_backend::select_user() {
   DataManager::SetValue("tw_crypto_user_id", "0");
   DataManager::SetValue(TW_CRYPTO_PWTYPE, DataManager::GetStrValue("tw_crypto_pwtype_0"));

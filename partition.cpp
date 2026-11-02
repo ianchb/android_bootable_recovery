@@ -71,6 +71,7 @@
 
 #ifdef TW_INCLUDE_CRYPTO
 #include "Decrypt.h"
+#include "KeystoreInfo.hpp"
 #endif
 
 extern "C" {
@@ -758,6 +759,12 @@ bool TWPartition::DecryptFbeDe() {
         LOGERR("This TWRP does not have synthetic password decrypt support\n");
         pwd_type = 0; // default password
       }
+      int pattern_size = 3;
+      if (pwd_type == 2) {
+        pattern_size = KeystoreInfo().getLockPatternSize(0);
+        if (pattern_size < 3 || pattern_size > 6) pattern_size = 3;
+        LOGINFO("Pattern grid size: %d\n", pattern_size);
+      }
       PartitionManager.ParseUsers(); // after load_all_de_keys() to parse_users
       for (const UsersStruct& user : *PartitionManager.GetUsersList()) {
         if (user.user_id != 0) {
@@ -771,6 +778,7 @@ bool TWPartition::DecryptFbeDe() {
       }
       DataManager::SetValue(TW_CRYPTO_PWTYPE, pwd_type);
       DataManager::SetValue("tw_crypto_pwtype_0", pwd_type);
+      DataManager::SetValue(TW_CRYPTO_PATTERN_SIZE, pattern_size);
       DataManager::SetValue(TW_CRYPTO_PASSWORD, "");
       DataManager::SetValue("tw_crypto_display", "");
       de_state_ = DeState::READY;

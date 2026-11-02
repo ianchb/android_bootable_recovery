@@ -5264,6 +5264,7 @@ static void show_decrypt_page(page_transition transition) {
   options.kind = decrypt == nullptr ? gui2_backend::lock_kind::PASSWORD : decrypt->kind();
   options.failed = page_state.decrypt_failed;
   options.pattern = &page_state.decrypt_pattern;
+  options.pattern_size = decrypt == nullptr ? 3 : decrypt->pattern_size();
   options.pattern_callback = decrypt_pattern_complete;
   options.pattern_dot_callback = decrypt_pattern_dot;
   options.keyboard = &page_state.decrypt_keyboard_widget;

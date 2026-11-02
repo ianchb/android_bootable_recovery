@@ -19,6 +19,7 @@ struct decrypt_page_options {
   gui2_backend::lock_kind kind = gui2_backend::lock_kind::PASSWORD;
   bool failed = false;
   gui2_components::pattern_lock* pattern = nullptr;
+  int pattern_size = 3;
   gui2_components::pattern_complete_callback pattern_callback = nullptr;
   gui2_components::pattern_dot_callback pattern_dot_callback = nullptr;
   void* pattern_user_data = nullptr;

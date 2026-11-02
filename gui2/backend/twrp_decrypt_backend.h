@@ -20,6 +20,7 @@ class twrp_decrypt_backend final : public decrypt_backend {
 
   bool is_encrypted() override;
   lock_kind kind() override;
+  int pattern_size() override;
   void select_user() override;
   bool start(const std::string& password) override;
   bool start_refresh() override;

@@ -143,6 +143,7 @@
 #define TW_IS_ENCRYPTED             "tw_is_encrypted"
 #define TW_IS_DECRYPTED             "tw_is_decrypted"
 #define TW_CRYPTO_PWTYPE            "tw_crypto_pwtype"
+#define TW_CRYPTO_PATTERN_SIZE      "tw_crypto_pattern_size"
 #define TW_HAS_CRYPTO               "tw_has_crypto"
 #define TW_IS_FBE                   "tw_is_fbe"
 #define TW_CRYPTO_PASSWORD          "tw_crypto_password"

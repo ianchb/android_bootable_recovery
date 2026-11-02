@@ -74,8 +74,9 @@ decrypt_page_view build_decrypt_page(const decrypt_page_options& options) {
       gui2_core::set_surface_style(holder, metrics.background, LV_OPA_TRANSP);
       lv_obj_set_style_pad_all(holder, 0, LV_PART_MAIN);
       gui2_core::disable_scrolling(holder);
-      options.pattern->create(holder, metrics, 0, 0, grid, options.pattern_callback,
-                              options.pattern_user_data, options.pattern_dot_callback);
+      options.pattern->create(holder, metrics, 0, 0, grid, options.pattern_size,
+                              options.pattern_callback, options.pattern_user_data,
+                              options.pattern_dot_callback);
     }
   } else if (options.kind != gui2_backend::lock_kind::DEFAULT || options.failed) {
     const int input_height = gui2_core::single_line_card_height() * 11 / 10;

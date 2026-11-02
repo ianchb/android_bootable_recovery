@@ -8,20 +8,22 @@
 namespace gui2_components {
 
 lv_point_t pattern_lock::center_of(int index) const {
-  const int row = index / kGrid;
-  const int column = index % kGrid;
+  const int row = index / grid_;
+  const int column = index % grid_;
   return { static_cast<int32_t>(column * cell_ + cell_ / 2),
            static_cast<int32_t>(row * cell_ + cell_ / 2) };
 }
 
 lv_obj_t* pattern_lock::create(lv_obj_t* parent, const gui2_core::ui_metrics& metrics, int x, int y,
-                               int size, pattern_complete_callback callback, void* user_data,
-                               pattern_dot_callback dot_callback) {
+                               int size, int grid_size, pattern_complete_callback callback,
+                               void* user_data, pattern_dot_callback dot_callback) {
   callback_ = callback;
   user_data_ = user_data;
   dot_callback_ = dot_callback;
+  grid_ = std::clamp(grid_size, kDefaultGrid, kMaxGrid);
+  dot_count_ = grid_ * grid_;
   size_ = std::max(1, size);
-  cell_ = std::max(1, size_ / kGrid);
+  cell_ = std::max(1, size_ / grid_);
   dot_size_ = std::clamp(cell_ / 5, gui2_core::ui_px(18), gui2_core::ui_px(34));
   count_ = 0;
   dragging_ = false;
@@ -44,7 +46,7 @@ lv_obj_t* pattern_lock::create(lv_obj_t* parent, const gui2_core::ui_metrics& me
   lv_obj_set_style_line_rounded(path_, true, LV_PART_MAIN);
   lv_obj_set_clickable(path_, false);
 
-  for (int i = 0; i < kDots; ++i) {
+  for (int i = 0; i < dot_count_; ++i) {
     const lv_point_t center = center_of(i);
     dots_[i] = lv_obj_create(root_);
     lv_obj_set_size(dots_[i], dot_size_, dot_size_);
@@ -63,7 +65,7 @@ lv_obj_t* pattern_lock::create(lv_obj_t* parent, const gui2_core::ui_metrics& me
 void pattern_lock::reset() {
   count_ = 0;
   dragging_ = false;
-  for (int i = 0; i < kDots; ++i) {
+  for (int i = 0; i < dot_count_; ++i) {
     if (dots_[i] != nullptr)
       lv_obj_set_style_bg_color(dots_[i], gui2_core::ui.idle_dot, LV_PART_MAIN);
   }
@@ -73,7 +75,7 @@ void pattern_lock::reset() {
 void pattern_lock::detach() {
   root_ = nullptr;
   path_ = nullptr;
-  for (int i = 0; i < kDots; ++i) dots_[i] = nullptr;
+  for (int i = 0; i < kMaxDots; ++i) dots_[i] = nullptr;
   count_ = 0;
   dragging_ = false;
   callback_ = nullptr;
@@ -96,7 +98,7 @@ bool pattern_lock::local_point(lv_point_t* out) const {
 
 int pattern_lock::dot_at(const lv_point_t& point) const {
   const int radius = std::max(dot_size_, cell_ * 2 / 5);
-  for (int i = 0; i < kDots; ++i) {
+  for (int i = 0; i < dot_count_; ++i) {
     const lv_point_t center = center_of(i);
     const int dx = point.x - center.x;
     const int dy = point.y - center.y;
@@ -113,7 +115,7 @@ bool pattern_lock::used(int index) const {
 }
 
 void pattern_lock::connect(int index) {
-  if (count_ >= kDots || used(index)) return;
+  if (count_ >= dot_count_ || used(index)) return;
   order_[count_++] = index;
   if (dots_[index] != nullptr)
     lv_obj_set_style_bg_color(dots_[index], gui2_core::ui.accent, LV_PART_MAIN);
@@ -126,10 +128,10 @@ void pattern_lock::connect_crossed(int index) {
   if (count_ == 0) return;
 
   const int previous = order_[count_ - 1];
-  const int px = previous % kGrid;
-  const int py = previous / kGrid;
-  const int nx = index % kGrid;
-  const int ny = index / kGrid;
+  const int px = previous % grid_;
+  const int py = previous / grid_;
+  const int nx = index % grid_;
+  const int ny = index / grid_;
 
   int step_x = (nx > px) ? 1 : -1;
   int step_y = (ny > py) ? 1 : -1;
@@ -145,7 +147,7 @@ void pattern_lock::connect_crossed(int index) {
   while ((step_y == 0 || y != ny - step_y) && (step_x == 0 || x != nx - step_x)) {
     x += step_x;
     y += step_y;
-    const int crossed = y * kGrid + x;
+    const int crossed = y * grid_ + x;
     if (!used(crossed)) connect(crossed);
   }
 }
